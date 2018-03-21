@@ -4,8 +4,9 @@
 using namespace std;
 
 // initializing the tic-tac-toe board
-char board[3][3] = {{' ',' ',' '},{' ',' ',' '},{' ',' ',' '}};
+char board[3][3];
 
+// either computer or user
 string player;
 // contains row and col of a position in the tic-tac-toe board
 struct Position {
@@ -17,9 +18,7 @@ void makeMove(string player);
 void userMove();
 void computerMove();
 bool isDraw();
-// bool isWin();
 Position optimalMove();
-// int evaluateFunc(string player);
 int minmax(bool maximizer);
 void displayBoard();
 int evaluate();
@@ -83,51 +82,6 @@ void computerMove() {
   // updating the board with computer's move
 	board[bestMove.row][bestMove.col] = 'O';
 }
-
-/*
-// returns true if the someone won the game, else returns false
-bool isWin() {
-	if (board[0][0] != ' ') {
-    		if (board[0][0] == board[0][1])
-      			if (board[0][0] == board[0][2]) {
-        			return true;
-      			}
-    		if (board[1][0] == board[0][0])
-      			if (board[2][0] == board[0][0]) {
-        			return true;
-      			}
-    		if (board[0][0] == board[1][1])
-      			if (board[0][0] == board[2][2]) {
-        			return true;
-      			}
-  else
-    		if (board[0][1] != ' ')
-      			if (board[0][1] == board[1][1])
-        			if (board[0][1] == board[2][1]) {
-          				return true;
-        			}
-  else
-    		if (board[1][0] != ' ')
-      			if (board[1][0] == board[1][1])
-        			if (board[1][0] == board[1][2]) {
-          				return true;
-        			}
-  else
-    		if (board[2][0] != ' ')
-      			if (board[2][0] == board[2][1])
-        			if (board[2][0] == board[2][2]) {
-          				return true;
-        			}
-  else
-    		if (board[0][2] != ' ')
-      			if (board[0][2] == board[1][2])
-        			if (board[0][2] == board[2][2]) {
-          				return true;
-        			}
-  	}
-  	return false;
-}
-*/
 
 // returns true if there are any remaining move else false
 bool canMove() {
@@ -201,19 +155,6 @@ bool isDraw() {
 	if (evaluateScore == 10 || evaluateScore == -10) return false;
 	return true;
 }
-
-/*
-// evaluates the score if the game is won by either player or drawn
-int evaluateFunc() {
-    // cout << isWin() << endl;
-		if (isWin() && (player == "user"))	return -10;
-		if ((isWin()) && (player == "computer")) {
-		  // cout << "Entering wrong place\n";
-		  return 10;
-		}
-		if (isDraw()) return 0;
-}
-*/
 
 // returns the best optimal move computer needs to move
 Position optimalMove() {
@@ -296,8 +237,8 @@ int minmax(bool maximizer) {
   return bestScore;
 }
 
-// driver fucntion
-int main() {
+// plays the game
+void playGame() {
   cout << "      TIC-TAC-TOE     \n";
   cout << "A game where the computer God.\n\n";
   // loop until the player inputs user or computer
@@ -308,21 +249,55 @@ int main() {
   } while (player != "user" && player != "computer");
   
   int evaluateScore;
+  
   // loop until the game is not over
   do {
+    // calls makeMove that forwards which player should make the move
     makeMove(player);
+    // changes the player turn 
     if (player == "user")
       player = "computer";
     else
     	player = "user";
     displayBoard();
     cout << "**************************\n";
+    // calls evaluate() and stores the result in evaluateScore
     evaluateScore = evaluate();
-  } while ((evaluateScore == 10 || evaluateScore == -10) || (isDraw() == false));
+  } while ((evaluateScore != 10 && evaluateScore != -10) && (isDraw() == false));
+  
   cout << "     GAME OVER!     \n";
+  // if the game is drawn
   if (isDraw())
   	cout << "It's a draw.";
-  else
+  // if the game is won
+  else {
+    if (player == "user")
+      player = "computer";
+    else
+    	player = "user";
   	cout << player << " won the game! \n";
+  }
+}
+
+// driver fucntion
+int main() {
+  char playAgain;
+  // loop until the user wants to stop playing the game
+  do {
+    // initializing each characters of the global array with ' '
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        board[i][j] = ' ';
+      }
+    }
+    // call playGame that actually makes the game functional
+    playGame();
+    // loop until the user enters the right character
+    do {
+      cout << "Wanna play again? [Y/N]";
+      cin >> playAgain;
+    } while (playAgain != 'Y' && playAgain != 'N');
+    cout << "\n\n\n";
+  } while (playAgain != 'N');
   return 0;
 }
